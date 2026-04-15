@@ -9,7 +9,6 @@ import {
   Pill,
   Bell
 } from 'lucide-react';
-import { StorageService } from '../services/storage';
 
 interface LayoutProps {
   children: React.ReactNode;

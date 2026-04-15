@@ -10,12 +10,33 @@ interface AuthProps {
 const Auth: React.FC<AuthProps> = ({ onLogin, onRegister }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [error, setError] = useState<string | null>(null);
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters.');
+      return;
+    }
+
     if (isLogin) {
       onLogin(formData.email, formData.password);
     } else {
+      if (!formData.name) {
+        setError('Please enter your full name.');
+        return;
+      }
       onRegister(formData.name, formData.email, formData.password);
     }
   };
@@ -34,18 +55,24 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onRegister }) => {
         <div className="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
           <div className="flex gap-4 p-1 bg-slate-100 rounded-2xl mb-8">
             <button
-              onClick={() => setIsLogin(true)}
+              onClick={() => { setIsLogin(true); setError(null); }}
               className={`flex-1 py-2.5 rounded-xl font-bold transition-all ${isLogin ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'}`}
             >
               Login
             </button>
             <button
-              onClick={() => setIsLogin(false)}
+              onClick={() => { setIsLogin(false); setError(null); }}
               className={`flex-1 py-2.5 rounded-xl font-bold transition-all ${!isLogin ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500'}`}
             >
               Register
             </button>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-2">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
