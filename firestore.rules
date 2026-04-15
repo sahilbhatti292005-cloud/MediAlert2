@@ -1,0 +1,138 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users
+// Document ID: {userId} (matches auth.uid)
+// Fields:
+//   - name: string (required)
+//   - email: string (required, email format)
+//   - createdAt: number (required)
+//
+// Collection: medicines
+// Document ID: {medicineId}
+// Fields:
+//   - userId: string (required, matches auth.uid)
+//   - name: string (required, 1-100 chars)
+//   - dosage: string (required, 1-100 chars)
+//   - frequency: string (required)
+//   - times: list (required, strings HH:mm)
+//   - startDate: string (required, YYYY-MM-DD)
+//   - endDate: string (optional, YYYY-MM-DD)
+//   - notes: string (optional, 0-500 chars)
+//   - createdAt: number (required)
+//
+// Collection: logs
+// Document ID: {logId}
+// Fields:
+//   - userId: string (required, matches auth.uid)
+//   - medicineId: string (required)
+//   - date: string (required, YYYY-MM-DD)
+//   - time: string (required, HH:mm)
+//   - status: string (required, enum: Pending, Taken, Missed, Snoozed)
+//   - timestamp: number (required)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+
+    function uidUnchanged() {
+      return !('userId' in request.resource.data) || request.resource.data.userId == request.auth.uid;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string && dateStr.matches("^\\d{4}-\\d{2}-\\d{2}$");
+    }
+
+    function isValidTimeString(timeStr) {
+      return timeStr is string && timeStr.matches("^\\d{2}:\\d{2}$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(['name', 'email', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             isValidEmail(data.email) &&
+             data.createdAt is number;
+    }
+
+    function isValidMedicine(data) {
+      return hasOnlyAllowedFields(['userId', 'name', 'dosage', 'frequency', 'times', 'startDate', 'endDate', 'notes', 'createdAt']) &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.dosage is string && data.dosage.size() > 0 && data.dosage.size() <= 100 &&
+             data.frequency is string &&
+             data.times is list &&
+             isValidDateString(data.startDate) &&
+             (!('endDate' in data) || isValidDateString(data.endDate)) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
+             data.createdAt is number;
+    }
+
+    function isValidLog(data) {
+      return hasOnlyAllowedFields(['userId', 'medicineId', 'date', 'time', 'status', 'timestamp']) &&
+             data.userId == request.auth.uid &&
+             data.medicineId is string &&
+             isValidDateString(data.date) &&
+             isValidTimeString(data.time) &&
+             data.status in ['Pending', 'Taken', 'Missed', 'Snoozed'] &&
+             data.timestamp is number;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data) && 
+                    request.resource.data.email == resource.data.email; // Email immutable
+    }
+
+    match /medicines/{medicineId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidMedicine(request.resource.data);
+      allow update: if isDocOwner() && isValidMedicine(request.resource.data) && 
+                    request.resource.data.userId == resource.data.userId;
+      allow delete: if isDocOwner();
+    }
+
+    match /logs/{logId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidLog(request.resource.data);
+      allow update: if isDocOwner() && isValidLog(request.resource.data) && 
+                    request.resource.data.userId == resource.data.userId;
+      allow delete: if isDocOwner();
+    }
+  }
+}
