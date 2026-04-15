@@ -1,10 +1,9 @@
 {
-  "projectId": "gen-lang-client-0804622500",
-  "appId": "1:262605790043:web:016eb7a6cbd22b0c9b587e",
-  "apiKey": "AIzaSyCSygqsL8nA2-79I-e6O6CFveV_jJBgksE",
-  "authDomain": "gen-lang-client-0804622500.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-4524f8fa-c8d6-43b0-9d9f-ff4ebaea83f3",
-  "storageBucket": "gen-lang-client-0804622500.firebasestorage.app",
-  "messagingSenderId": "262605790043",
-  "measurementId": ""
+  "apiKey": "AIzaSyBG7Y8ib5_LPBb0qT72toltKWGCpVfcSV8",
+  "authDomain": "medicinereminder-fcaff.firebaseapp.com",
+  "projectId": "medicinereminder-fcaff",
+  "storageBucket": "medicinereminder-fcaff.firebasestorage.app",
+  "messagingSenderId": "135357689133",
+  "appId": "1:135357689133:web:dacf1ba0794e241a1937a4",
+  "measurementId": "G-9MGVVDM6KK"
 }
