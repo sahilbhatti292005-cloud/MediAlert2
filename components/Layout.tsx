@@ -115,6 +115,13 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
             <button className="p-2 text-slate-400 hover:text-slate-600 transition-colors">
               <Bell size={20} />
             </button>
+            <button 
+              onClick={onLogout}
+              className="md:hidden p-2 text-slate-400 hover:text-red-600 transition-colors"
+              title="Logout"
+            >
+              <LogOut size={20} />
+            </button>
           </div>
         </header>
         <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
