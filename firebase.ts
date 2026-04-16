@@ -1,9 +1,8 @@
 
-// js/firebase-config.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
+// Firebase configuration provided by the user
 const firebaseConfig = {
   apiKey: "AIzaSyBG7Y8ib5_LPBb0qT72toltKWGCpVfcSV8",
   authDomain: "medicinereminder-fcaff.firebaseapp.com",
@@ -16,5 +15,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export default app;
