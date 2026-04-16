@@ -135,10 +135,6 @@ const Auth: React.FC<AuthProps> = () => {
             </button>
           </form>
         </div>
-
-        <div className="mt-8 text-center text-slate-400 text-sm">
-          <p>© 2024 MediAlert. All rights reserved.</p>
-        </div>
       </div>
     </div>
   );
