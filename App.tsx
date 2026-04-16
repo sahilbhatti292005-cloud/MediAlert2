@@ -9,6 +9,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import AddEditMedicine from './pages/AddEditMedicine';
 import History from './pages/History';
+import Support from './pages/Support';
 import Auth from './pages/Auth';
 import ReminderModal from './components/ReminderModal';
 
@@ -152,6 +153,7 @@ const App: React.FC = () => {
           <Route path="/add" element={<AddEditMedicine userId={user.id} onSave={handleSaveMedicine} existingMedicines={medicines} />} />
           <Route path="/edit/:id" element={<AddEditMedicine userId={user.id} onSave={handleSaveMedicine} existingMedicines={medicines} />} />
           <Route path="/history" element={<History logs={logs} medicines={medicines} />} />
+          <Route path="/support" element={<Support />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Layout>

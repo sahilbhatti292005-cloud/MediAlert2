@@ -7,7 +7,8 @@ import {
   History, 
   LogOut, 
   Pill,
-  Bell
+  Bell,
+  MessageCircle
 } from 'lucide-react';
 import { StorageService } from '../services/storage';
 
@@ -25,6 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children, user, onLogout }) => {
     { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
     { label: 'Add Medicine', icon: PlusCircle, path: '/add' },
     { label: 'History', icon: History, path: '/history' },
+    { label: 'Support', icon: MessageCircle, path: '/support' },
   ];
 
   return (
